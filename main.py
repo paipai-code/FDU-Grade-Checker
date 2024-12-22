@@ -20,7 +20,10 @@ class UISAuth:
         self.psw = password
 
     def _page_init(self):
-        page_login = self.session.get(self.url_login)
+        try:
+            page_login = self.session.get(self.url_login)
+        except requests.exceptions.ConnectionError:
+            exit(0)
         if page_login.status_code == 200:
             return page_login.text
         else:
@@ -170,6 +173,7 @@ if __name__ == '__main__':
     if snapshot.compare(old_snapshot):
         save_snapshot(snapshot, token)
         title = f'GPA {str(old_snapshot.gpa if old_snapshot is not None else 0.0)} -> {str(snapshot.gpa)}'
-        url = f'http://www.pushplus.plus/send?token={token}&title={title}&content=排名：{int(old_snapshot.rank if old_snapshot is not None else 0.0)} -> {int(snapshot.rank)}&template=html'
+        url = f'https://sctapi.ftqq.com/{token}.send?title={title}&desp=rank: {int(old_snapshot.rank if old_snapshot is not None else 4.0)} -> {int(snapshot.rank)}'
+        # url = f'http://www.pushplus.plus/send?token={token}&title={title}&content=排名：{int(old_snapshot.rank if old_snapshot is not None else 0.0)} -> {int(snapshot.rank)}&template=html'
         requests.get(url)
         print('update')
